@@ -5,7 +5,7 @@
     "operadriver",
     "selenium"
   ],
-  "description": "Microsoft Edge Driver for Selenium",
+  "description": "Opera Driver for Selenium",
   "homepage": "https://github.com/uex-io/node-operadriver",
   "repository": {
     "type": "git",
