@@ -202,7 +202,7 @@ executed as a callback at the end of your tests
 The NPM package version tracks the version of operadriver that will be installed,
 with an additional build number that is used for revisions to the installer.
 You can use the package version number to install a specific version, or use the
-setting to a specific version. If there is a new Edge Driver version available which is not yet available as a version of `operadriver`, the npm command `npm run update-operadriver` in this repository can be used to make the required updates to this module, please submit the change as a PR. To always install the latest version of MSEdgedriver,
+setting to a specific version. If there is a new Edge Driver version available which is not yet available as a version of `operadriver`, the npm command `npm run update-operadriver` in this repository can be used to make the required updates to this module, please submit the change as a PR. To always install the latest version of Operadriver,
 use `LATEST` as the version number:
 
 ```shell
@@ -223,9 +223,9 @@ OPERADRIVER_VERSION=LATEST npm install operadriver
 
 ## A Note on operadriver
 
-MSEdgedriver is not a library for NodeJS.
+Operadriver is not a library for NodeJS.
 
-This is an _NPM wrapper_ and can be used to conveniently make MSEdgedriver available.
+This is an _NPM wrapper_ and can be used to conveniently make Operadriver available.
 It is not a Node.js wrapper.
 
 ## Supported Node.js versions
