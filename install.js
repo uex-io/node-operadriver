@@ -22,7 +22,7 @@ let cdnUrl =
   process.env.npm_config_operadriver_cdnurl ||
   process.env.OPERADRIVER_CDNURL ||
   "https://github.com/operasoftware/operachromiumdriver/releases/download/";
-// suffix with v.116.0.5845.97/operadriver_win32.zip
+
 const configuredfilePath =
   process.env.npm_config_OPERADRIVER_FILEPATH || process.env.OPERADRIVER_FILEPATH;
 
@@ -35,11 +35,11 @@ if (platform === "linux") {
   console.log("Linux not supported.");
   process.exit(0);
 } else if (platform === "darwin" || platform === "freebsd") {
-  if (process.arch === "x64") {
+  if (process.arch === "x64" || process.arch === "arm64") {
     // @ts-ignore
     platform = "mac64";
   } else {
-    console.log("Only Mac 64 bits supported.");
+    console.log(`Only Mac 64 bits supported Platform ${process.platform} ${process.arch}`);
     process.exit(1);
   }
 } else if (platform !== "win32") {
