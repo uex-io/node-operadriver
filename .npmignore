@@ -1,4 +1,4 @@
-lib/msedgedriver/**
+lib/operadriver/**
 tmp
 .eslintrc.json
 .gitignore

@@ -1,15 +1,15 @@
 {
-  "name": "msedgedriver",
+  "name": "operadriver",
   "version": "82.0.0",
   "keywords": [
-    "msedgedriver",
+    "operadriver",
     "selenium"
   ],
   "description": "Microsoft Edge Driver for Selenium",
-  "homepage": "https://github.com/uex-io/node-msedgedriver",
+  "homepage": "https://github.com/uex-io/node-operadriver",
   "repository": {
     "type": "git",
-    "url": "git://github.com/uex-io/node-msedgedriver.git"
+    "url": "git://github.com/uex-io/node-operadriver.git"
   },
   "license": "Apache-2.0",
   "author": {
@@ -17,13 +17,13 @@
     "email": "giggio@giggio.net",
     "url": "http://www.lambda3.com.br"
   },
-  "main": "lib/msedgedriver",
+  "main": "lib/operadriver",
   "bin": {
-    "msedgedriver": "./bin/msedgedriver"
+    "operadriver": "./bin/operadriver"
   },
   "scripts": {
     "install": "node install.js",
-    "update-msedgedriver": "node update.js"
+    "update-operadriver": "node update.js"
   },
   "dependencies": {
     "del": "^4.1.1",
