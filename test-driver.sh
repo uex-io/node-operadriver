@@ -1,10 +1,10 @@
-# Start MSEdgeDriver and make it non-blocking with ampersand
-./bin/msedgedriver &
+# Start OperaDriver and make it non-blocking with ampersand
+./bin/operadriver &
 
-# Keep track of the MSEdgeDrivers Process ID
+# Keep track of the OperaDrivers Process ID
 TASK_PID=$!
 
-# Wait for 10 seconds to give the MSEdgeDriver a chance to fail if there is an
+# Wait for 10 seconds to give the OperaDriver a chance to fail if there is an
 # issue.
 sleep 5
 

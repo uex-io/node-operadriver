@@ -2,7 +2,7 @@
 
 const extractZip = require("extract-zip");
 const fs = require("fs");
-const helper = require("./lib/msedgedriver");
+const helper = require("./lib/operadriver");
 const request = require("request");
 const mkdirp = require("mkdirp");
 const path = require("path");
@@ -11,28 +11,26 @@ const child_process = require("child_process");
 const os = require("os");
 
 const skipDownload =
-  process.env.npm_config_edgechromiumdriver_skip_download ||
-  process.env.EDGECHROMIUMDRIVER_SKIP_DOWNLOAD;
+  process.env.npm_config_operadriver_skip_download || process.env.OPERADRIVER_SKIP_DOWNLOAD;
 if (skipDownload === "true") {
-  console.log("Found EDGECHROMIUMDRIVER_SKIP_DOWNLOAD variable, skipping installation.");
+  console.log("Found OPERADRIVER_SKIP_DOWNLOAD variable, skipping installation.");
   process.exit(0);
 }
 
-const libPath = path.join(__dirname, "lib", "msedgedriver");
+const libPath = path.join(__dirname, "lib", "operadriver");
 let cdnUrl =
-  process.env.npm_config_edgechromiumdriver_cdnurl ||
-  process.env.EDGECHROMIUMDRIVER_CDNURL ||
-  "https://msedgedriver.azureedge.net/";
+  process.env.npm_config_operadriver_cdnurl ||
+  process.env.OPERADRIVER_CDNURL ||
+  "https://github.com/operasoftware/operachromiumdriver/releases/download/";
+// suffix with v.116.0.5845.97/operadriver_win32.zip
 const configuredfilePath =
-  process.env.npm_config_EDGECHROMIUMDRIVER_FILEPATH || process.env.EDGECHROMIUMDRIVER_FILEPATH;
+  process.env.npm_config_OPERADRIVER_FILEPATH || process.env.OPERADRIVER_FILEPATH;
 
 cdnUrl = cdnUrl.replace(/\/+$/, "");
 let platform = process.platform;
 
-let edgechromiumdriver_version =
-  process.env.npm_config_edgechromiumdriver_version ||
-  process.env.EDGECHROMIUMDRIVER_VERSION ||
-  helper.version;
+let operadriver_version =
+  process.env.npm_config_operadriver_version || process.env.OPERADRIVER_VERSION || helper.version;
 if (platform === "linux") {
   console.log("Linux not supported.");
   process.exit(0);
@@ -49,33 +47,32 @@ if (platform === "linux") {
   process.exit(1);
 }
 let tmpPath;
-const edgechromiumdriverBinaryFileName =
-  process.platform === "win32" ? "msedgedriver.exe" : "msedgedriver";
-let edgechromiumdriverBinaryFilePath;
+const operadriverBinaryFileName = process.platform === "win32" ? "operadriver.exe" : "operadriver";
+let operadriverBinaryFilePath;
 let downloadedFile = "";
 
 Promise.resolve()
-  .then(function() {
-    if (edgechromiumdriver_version === "LATEST")
+  .then(function () {
+    if (operadriver_version === "LATEST")
       return getLatestVersion(getRequestOptions(cdnUrl + "/LATEST_STABLE"));
   })
   .then(() => {
     tmpPath = findSuitableTempDirectory();
-    edgechromiumdriverBinaryFilePath = path.resolve(tmpPath, edgechromiumdriverBinaryFileName);
+    operadriverBinaryFilePath = path.resolve(tmpPath, operadriverBinaryFileName);
   })
   .then(verifyIfChromedriverIsAvailableAndHasCorrectVersion)
-  .then(edgechromiumdriverIsAvailable => {
-    if (edgechromiumdriverIsAvailable) return;
+  .then((operadriverIsAvailable) => {
+    if (operadriverIsAvailable) return;
     console.log(
-      "Current existing msedgedriver binary is unavailable, proceding with download and extraction."
+      "Current existing operadriver binary is unavailable, proceding with download and extraction."
     );
     return downloadFile().then(extractDownload);
   })
   .then(() => copyIntoPlace(tmpPath, libPath))
   .then(fixFilePermissions)
-  .then(() => console.log("Done. msedgedriver binary available at", helper.path))
-  .catch(function(err) {
-    console.error("msedgedriver installation failed", err);
+  .then(() => console.log("Done. operadriver binary available at", helper.path))
+  .catch(function (err) {
+    console.error("operadriver installation failed", err);
     process.exit(1);
   });
 
@@ -85,10 +82,10 @@ function downloadFile() {
     console.log("Using file: ", downloadedFile);
     return Promise.resolve();
   } else {
-    const fileName = `edgedriver_${platform}.zip`;
+    const fileName = `operadriver_${platform}.zip`;
     const tempDownloadedFile = path.resolve(tmpPath, fileName);
     downloadedFile = tempDownloadedFile;
-    const formattedDownloadUrl = `${cdnUrl}/${edgechromiumdriver_version}/${fileName}`;
+    const formattedDownloadUrl = `${cdnUrl}/v.${operadriver_version}/${fileName}`;
     console.log("Downloading from file: ", formattedDownloadUrl);
     console.log("Saving to file:", downloadedFile);
     return requestBinary(getRequestOptions(formattedDownloadUrl), downloadedFile);
@@ -96,30 +93,30 @@ function downloadFile() {
 }
 
 function verifyIfChromedriverIsAvailableAndHasCorrectVersion() {
-  if (!fs.existsSync(edgechromiumdriverBinaryFilePath)) return false;
+  if (!fs.existsSync(operadriverBinaryFilePath)) return false;
   const forceDownload =
-    process.env.npm_config_edgechromiumdriver_force_download === "true" ||
-    process.env.EDGECHROMIUMDRIVER_FORCE_DOWNLOAD === "true";
+    process.env.npm_config_operadriver_force_download === "true" ||
+    process.env.OPERADRIVER_FORCE_DOWNLOAD === "true";
   if (forceDownload) return false;
-  console.log("msedgedriver binary exists. Validating...");
+  console.log("operadriver binary exists. Validating...");
   const deferred = new Deferred();
   try {
-    fs.accessSync(edgechromiumdriverBinaryFilePath, fs.constants.X_OK);
-    const cp = child_process.spawn(edgechromiumdriverBinaryFilePath, ["--version"]);
+    fs.accessSync(operadriverBinaryFilePath, fs.constants.X_OK);
+    const cp = child_process.spawn(operadriverBinaryFilePath, ["--version"]);
     let str = "";
-    cp.stdout.on("data", function(data) {
+    cp.stdout.on("data", function (data) {
       str += data;
     });
-    cp.on("error", function() {
+    cp.on("error", function () {
       deferred.resolve(false);
     });
-    cp.on("close", function(code) {
+    cp.on("close", function (code) {
       if (code !== 0) return deferred.resolve(false);
       const parts = str.split(" ");
       if (parts.length < 3) return deferred.resolve(false);
-      if (parts[1].startsWith(edgechromiumdriver_version)) {
+      if (parts[1].startsWith(operadriver_version)) {
         console.log(str);
-        console.log(`msedgedriver is already available at '${edgechromiumdriverBinaryFilePath}'.`);
+        console.log(`operadriver is already available at '${operadriverBinaryFilePath}'.`);
         return deferred.resolve(true);
       }
       deferred.resolve(false);
@@ -136,14 +133,14 @@ function findSuitableTempDirectory() {
     process.env.TMPDIR || process.env.TMP || process.env.npm_config_tmp,
     os.tmpdir(),
     "/tmp",
-    path.join(process.cwd(), "tmp")
+    path.join(process.cwd(), "tmp"),
   ];
 
   for (let i = 0; i < candidateTmpDirs.length; i++) {
     if (!candidateTmpDirs[i]) continue;
     // Prevent collision with other versions in the dependency tree
-    const namespace = edgechromiumdriver_version;
-    const candidatePath = path.join(candidateTmpDirs[i], namespace, "msedgedriver");
+    const namespace = operadriver_version;
+    const candidatePath = path.join(candidateTmpDirs[i], namespace, "operadriver");
     try {
       mkdirp.sync(candidatePath, "0777");
       const testFile = path.join(candidatePath, now + ".tmp");
@@ -156,7 +153,7 @@ function findSuitableTempDirectory() {
   }
 
   console.error(
-    "Can not find a writable tmp directory, please report issue on https://github.com/uex-io/node-msedgedriver/issues/ with as much information as possible."
+    "Can not find a writable tmp directory, please report issue on https://github.com/uex-io/node-operadriver/issues/ with as much information as possible."
   );
   process.exit(1);
 }
@@ -206,7 +203,7 @@ function getRequestOptions(downloadPath) {
   if (ca) {
     console.log("Using npmconf ca");
     options.agentOptions = {
-      ca: ca
+      ca: ca,
     };
     options.ca = ca;
   }
@@ -221,11 +218,11 @@ function getRequestOptions(downloadPath) {
 
 function getLatestVersion(requestOptions) {
   const deferred = new Deferred();
-  request(requestOptions, function(err, response, data) {
+  request(requestOptions, function (err, response, data) {
     if (err) {
       deferred.reject("Error with http(s) request: " + err);
     } else {
-      edgechromiumdriver_version = data.trim();
+      operadriver_version = data.trim();
       deferred.resolve(true);
     }
   });
@@ -241,11 +238,11 @@ function requestBinary(requestOptions, filePath) {
 
   const client = request(requestOptions);
 
-  client.on("error", function(err) {
+  client.on("error", function (err) {
     deferred.reject("Error with http(s) request: " + err);
   });
 
-  client.on("data", function(data) {
+  client.on("data", function (data) {
     fs.writeSync(outFile, data, 0, data.length, null);
     count += data.length;
     if (count - notifiedCount > 800000) {
@@ -254,7 +251,7 @@ function requestBinary(requestOptions, filePath) {
     }
   });
 
-  client.on("end", function() {
+  client.on("end", function () {
     console.log("Received " + Math.floor(count / 1024) + "K total.");
     fs.closeSync(outFile);
     deferred.resolve(true);
@@ -265,13 +262,13 @@ function requestBinary(requestOptions, filePath) {
 
 function extractDownload() {
   if (path.extname(downloadedFile) !== ".zip") {
-    fs.copyFileSync(downloadedFile, edgechromiumdriverBinaryFilePath);
+    fs.copyFileSync(downloadedFile, operadriverBinaryFilePath);
     console.log("Skipping zip extraction - binary file found.");
     return Promise.resolve();
   }
   const deferred = new Deferred();
   console.log("Extracting zip contents");
-  extractZip(path.resolve(downloadedFile), { dir: tmpPath }, function(err) {
+  extractZip(path.resolve(downloadedFile), { dir: tmpPath }, function (err) {
     if (err) {
       deferred.reject("Error extracting archive: " + err);
     } else {
@@ -282,7 +279,7 @@ function extractDownload() {
 }
 
 function copyIntoPlace(originPath, targetPath) {
-  return del(targetPath).then(function() {
+  return del(targetPath).then(function () {
     console.log("Copying to target path", targetPath);
 
     mkdirp.sync(targetPath, "0777");
@@ -291,9 +288,9 @@ function copyIntoPlace(originPath, targetPath) {
     console.log("reading orig folder ", originPath);
     const files = fs.readdirSync(originPath);
     let justFiles = [];
-    files.map(function(name) {
+    files.map(function (name) {
       var stat = fs.statSync(path.join(originPath, name));
-      if (!stat.isDirectory() && name.startsWith("msedgedriver")) {
+      if (!stat.isDirectory() && name.startsWith("operadriver")) {
         console.log("handling file ", name);
         justFiles.push(name);
       } else {
@@ -301,7 +298,7 @@ function copyIntoPlace(originPath, targetPath) {
       }
     });
 
-    const promises = justFiles.map(function(name) {
+    const promises = justFiles.map(function (name) {
       const deferred = new Deferred();
 
       const file = path.join(originPath, name);
@@ -311,7 +308,7 @@ function copyIntoPlace(originPath, targetPath) {
       console.log("writing file ", targetFile);
       const writer = fs.createWriteStream(targetFile);
 
-      writer.on("close", function() {
+      writer.on("close", function () {
         deferred.resolve(true);
       });
 
@@ -338,7 +335,7 @@ function Deferred() {
   this.resolve = null;
   this.reject = null;
   this.promise = new Promise(
-    function(resolve, reject) {
+    function (resolve, reject) {
       this.resolve = resolve;
       this.reject = reject;
     }.bind(this)

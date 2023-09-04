@@ -65,7 +65,7 @@ jobs:
           - powershell: |
                 node --version
                 npm --version
-                $nodeProcess = start node bin\msedgedriver -PassThru
+                $nodeProcess = start node bin\operadriver -PassThru
                 sleep 5
                 if ($nodeProcess.HasExited) { exit 1 }
                 Stop-Process -Id $nodeProcess.Id -Force
