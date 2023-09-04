@@ -50,22 +50,22 @@ OPERADRIVER_FORCE_DOWNLOAD=true npm install operadriver
 ## Custom binaries url
 
 To use a mirror of the OperaDriver binaries use npm config property `operadriver_cdnurl`.
-Default is `https://operadriver.azureedge.net/`.
+Default is `https://github.com/operasoftware/operachromiumdriver/releases/download/`.
 
 ```shell
-npm install operadriver --operadriver_cdnurl=https://operadriver.azureedge.net/
+npm install operadriver --operadriver_cdnurl=https://github.com/operasoftware/operachromiumdriver/releases/download/
 ```
 
 Or add property into your [`.npmrc`](https://docs.npmjs.com/files/npmrc) file.
 
 ```
-operadriver_cdnurl=https://operadriver.azureedge.net/
+operadriver_cdnurl=https://github.com/operasoftware/operachromiumdriver/releases/download/
 ```
 
 Another option is to use PATH variable `OPERADRIVER_CDNURL`.
 
 ```shell
-OPERADRIVER_CDNURL=https://operadriver.azureedge.net/ npm install operadriver
+OPERADRIVER_CDNURL=https://github.com/operasoftware/operachromiumdriver/releases/download/ npm install operadriver
 ```
 
 ## Custom binaries file
