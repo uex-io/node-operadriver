@@ -284,24 +284,27 @@ function copyIntoPlace(originPath, targetPath) {
 
     mkdirp.sync(targetPath, "0777");
 
+    let adjustedPath = path.join(originPath, `operadriver_${platform}`);
+
     // Look for the extracted directory, so we can rename it.
-    console.log("reading orig folder ", originPath);
-    const files = fs.readdirSync(originPath);
+    console.log("reading orig folder ", adjustedPath);
+    const files = fs.readdirSync(adjustedPath);
     let justFiles = [];
-    files.map(function (name) {
-      var stat = fs.statSync(path.join(originPath, name));
+    files.map((name) => {
+      console.log(`processing ${adjustedPath} ${name}`);
+      const stat = fs.statSync(path.join(adjustedPath, name));
       if (!stat.isDirectory() && name.startsWith("operadriver")) {
-        console.log("handling file ", name);
+        console.log(`handling ${adjustedPath} ${name}`);
         justFiles.push(name);
       } else {
-        console.log("Ignoring ", name);
+        console.log(`Ignoring ${adjustedPath} ${name}`);
       }
     });
 
     const promises = justFiles.map(function (name) {
       const deferred = new Deferred();
 
-      const file = path.join(originPath, name);
+      const file = path.join(adjustedPath, name);
       console.log("handling file ", file);
       const reader = fs.createReadStream(file);
       const targetFile = path.join(targetPath, name);
@@ -320,6 +323,8 @@ function copyIntoPlace(originPath, targetPath) {
 }
 
 function fixFilePermissions() {
+  console.log(`Entered fixFilePermissions with ${helper.path}`);
+
   // Check that the binary is user-executable and fix it if it isn't (problems with unzip library)
   if (process.platform != "win32") {
     const stat = fs.statSync(helper.path);
